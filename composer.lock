@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4cbf435f5dc9a6430685ca6f6aa0025b",
+    "content-hash": "bc49402e2646f84d5fc31ccad40a7be7",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.183.12",
+            "version": "3.183.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ee5225729f6428870b5168576b0450c0bb668976"
+                "reference": "cf9c877e799c43e22d0e0cbc840e91d1885b13b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ee5225729f6428870b5168576b0450c0bb668976",
-                "reference": "ee5225729f6428870b5168576b0450c0bb668976",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cf9c877e799c43e22d0e0cbc840e91d1885b13b6",
+                "reference": "cf9c877e799c43e22d0e0cbc840e91d1885b13b6",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.183.12"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.183.7"
             },
-            "time": "2021-06-03T18:12:48+00:00"
+            "time": "2021-05-27T01:00:13+00:00"
         },
         {
             "name": "defuse/php-encryption",
