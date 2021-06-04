@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.183.8",
+            "version": "3.183.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "3b52c4a99faa539c5bdc0a84cf88ee6ea385fd1c"
+                "reference": "ee5225729f6428870b5168576b0450c0bb668976"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/3b52c4a99faa539c5bdc0a84cf88ee6ea385fd1c",
-                "reference": "3b52c4a99faa539c5bdc0a84cf88ee6ea385fd1c",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ee5225729f6428870b5168576b0450c0bb668976",
+                "reference": "ee5225729f6428870b5168576b0450c0bb668976",
                 "shasum": ""
             },
             "require": {
@@ -92,9 +92,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.183.8"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.183.12"
             },
-            "time": "2021-05-27T18:13:28+00:00"
+            "time": "2021-06-03T18:12:48+00:00"
         },
         {
             "name": "defuse/php-encryption",
@@ -161,16 +161,16 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v5.2.1",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
-                "reference": "f42c9110abe98dd6cfe9053c49bc86acc70b2d23"
+                "reference": "3c2d70f2e64e2922345e89f2ceae47d2463faae1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/f42c9110abe98dd6cfe9053c49bc86acc70b2d23",
-                "reference": "f42c9110abe98dd6cfe9053c49bc86acc70b2d23",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/3c2d70f2e64e2922345e89f2ceae47d2463faae1",
+                "reference": "3c2d70f2e64e2922345e89f2ceae47d2463faae1",
                 "shasum": ""
             },
             "require": {
@@ -209,9 +209,9 @@
             ],
             "support": {
                 "issues": "https://github.com/firebase/php-jwt/issues",
-                "source": "https://github.com/firebase/php-jwt/tree/v5.2.1"
+                "source": "https://github.com/firebase/php-jwt/tree/v5.3.0"
             },
-            "time": "2021-02-12T00:02:00+00:00"
+            "time": "2021-05-20T17:37:02+00:00"
         },
         {
             "name": "google/apiclient",
@@ -703,16 +703,16 @@
         },
         {
             "name": "matecat/subfiltering",
-            "version": "v1.0.0",
+            "version": "v1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/matecat/subfiltering.git",
-                "reference": "834a4e88d11640a8827af1d145202ae158e86956"
+                "reference": "3806072ab8e302cc493208c332fb9ae161d502cd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/matecat/subfiltering/zipball/834a4e88d11640a8827af1d145202ae158e86956",
-                "reference": "834a4e88d11640a8827af1d145202ae158e86956",
+                "url": "https://api.github.com/repos/matecat/subfiltering/zipball/3806072ab8e302cc493208c332fb9ae161d502cd",
+                "reference": "3806072ab8e302cc493208c332fb9ae161d502cd",
                 "shasum": ""
             },
             "require": {
@@ -753,9 +753,9 @@
             ],
             "support": {
                 "issues": "https://github.com/matecat/subfiltering/issues",
-                "source": "https://github.com/matecat/subfiltering/tree/v1.0.0"
+                "source": "https://github.com/matecat/subfiltering/tree/v1.0.1"
             },
-            "time": "2021-05-26T13:25:57+00:00"
+            "time": "2021-06-04T07:24:21+00:00"
         },
         {
             "name": "matecat/whole-text-finder",
@@ -3686,5 +3686,5 @@
         "php": ">=5.5.0"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.0.0"
+    "plugin-api-version": "2.1.0"
 }
