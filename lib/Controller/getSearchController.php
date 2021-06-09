@@ -127,7 +127,10 @@ class getSearchController extends ajaxController {
         $srh_ttl    = ( isset( \INIT::$REPLACE_HISTORY_TTL ) and '' !== \INIT::$REPLACE_HISTORY_TTL ) ? \INIT::$REPLACE_HISTORY_TTL : 300;
         $this->srh  = Search_ReplaceHistoryFactory::create( $this->queryParams[ 'job' ], $srh_driver, $srh_ttl );
 
-        $filter            = Filter::getInstance( $this->featureSet );
+        //get Job Info
+        $this->job_data = Chunks_ChunkDao::getByIdAndPassword( (int)$this->job, $this->password );
+
+        $filter            = Filter::getInstance( $this->job_data->source, $this->job_data->target, $this->featureSet );
         $this->searchModel = new SearchModel( $this->queryParams, $filter );
     }
 
@@ -145,8 +148,6 @@ class getSearchController extends ajaxController {
             return;
         }
 
-        //get Job Info
-        $this->job_data = Chunks_ChunkDao::getByIdAndPassword( (int)$this->job, $this->password );
         $this->featureSet->loadForProject( $this->job_data->getProject() );
 
         switch ( $this->function ) {
@@ -259,7 +260,14 @@ class getSearchController extends ajaxController {
      * @return string|string[]|null
      */
     private function _getReplacedSegmentTranslation( $translation ) {
-        $replacedSegmentTranslation = WholeTextFinder::findAndReplace( $translation, $this->queryParams->target, $this->queryParams->replacement );
+        $replacedSegmentTranslation = WholeTextFinder::findAndReplace(
+                $translation,
+                $this->queryParams->target,
+                $this->queryParams->replacement,
+                true,
+                $this->queryParams->isExactMatchRequested,
+                $this->queryParams->isMatchCaseRequested
+        );
 
         return ( !empty( $replacedSegmentTranslation ) ) ? $replacedSegmentTranslation[ 'replacement' ] : $translation;
     }
@@ -394,7 +402,7 @@ class getSearchController extends ajaxController {
                 }
             }
 
-            $filter = Filter::getInstance( $this->featureSet );
+            $filter = Filter::getInstance( $this->job_data->source, $this->job_data->target,  $this->featureSet );
             $replacedTranslation = $filter->fromLayer1ToLayer0( $this->_getReplacedSegmentTranslation( $tRow[ 'translation' ] ) );
             $replacedTranslation = Utils::stripBOM( $replacedTranslation );
 

@@ -27,6 +27,12 @@ use Translators\TranslatorsModel;
 class ProjectManager {
 
     /**
+     * Configuration for segment notes handling
+     */
+    const SEGMENT_NOTES_LIMIT    = 10;
+    const SEGMENT_NOTES_MAX_SIZE = 65535;
+
+    /**
      * Counter fro the total number of segments in the project with the flag ( show_in_cattool == true )
      *
      * @var int
@@ -430,6 +436,8 @@ class ProjectManager {
          */
         $this->features->run( 'validateProjectCreation', $this->projectStructure );
 
+        $this->filter = Filter::getInstance( $this->projectStructure[ 'source_language' ], $this->projectStructure[ 'target_language' ], $this->features );
+
         /**
          * @var ArrayObject $this ->projectStructure['result']['errors']
          */
@@ -743,10 +751,8 @@ class ProjectManager {
 
             }
 
-            if ( $this->total_segments > 100000 || ( $this->files_word_count * count( $this->projectStructure[ 'target_language' ] ) ) > 1000000 ) {
-                //Allow projects with only one target language and 100000 segments ( ~ 550.000 words )
-                //OR
-                //A multi language project with max 420000 segments ( EX: 42000 segments in 10 languages ~ 2.700.000 words )
+            //Allow projects with less than 250.000 words or characters ( for cjk languages )
+            if ( $this->files_word_count > INIT::$MAX_SOURCE_WORDS ) {
                 throw new Exception( "MateCat is unable to create your project. We can do it for you. Please contact " . INIT::$SUPPORT_MAIL, 128 );
             }
 
@@ -952,7 +958,7 @@ class ProjectManager {
             $segmentElement[ 'source' ]        = $this->projectStructure[ 'source_language' ];
             $segmentElement[ 'target' ]        = implode( ",", $this->projectStructure[ 'array_jobs' ][ 'job_languages' ]->getArrayCopy() );
             $segmentElement[ 'payable_rates' ] = $this->projectStructure[ 'array_jobs' ][ 'payable_rates' ]->getArrayCopy();
-            $segmentElement[ 'segment' ]       = Filter::getInstance( $this->features )->fromLayer0ToLayer1( $segmentElement[ 'segment' ] );
+            $segmentElement[ 'segment' ]       = $this->filter->fromLayer0ToLayer1( $segmentElement[ 'segment' ] );
 
         }
 
@@ -1132,7 +1138,7 @@ class ProjectManager {
                         //the TMX is good to go
                         $this->checkTMX = 0;
 
-                    } elseif ( $found and $result[ 'data' ][ 'target_lang' ] ==  $this->projectStructure[ 'source_language' ] ) {
+                    } elseif ( $found and $result[ 'data' ][ 'target_lang' ] == $this->projectStructure[ 'source_language' ] ) {
 
                         /*
                          * This means that the TMX has a srclang as specification in the header. Warn the user.
@@ -1257,23 +1263,23 @@ class ProjectManager {
 
             $projectStructure[ 'tm_keys' ] = json_encode( $tm_key );
 
-            $newJob                       = new Jobs_JobStruct();
-            $newJob->password             = $password;
-            $newJob->id_project           = $projectStructure[ 'id_project' ];
-            $newJob->id_translator        = is_null( $projectStructure[ 'private_tm_user' ] ) ? "" : $projectStructure[ 'private_tm_user' ];
-            $newJob->source               = $projectStructure[ 'source_language' ];
-            $newJob->target               = $target;
-            $newJob->id_tms               = $projectStructure[ 'tms_engine' ];
-            $newJob->id_mt_engine         = $projectStructure[ 'target_language_mt_engine_id' ][ $target ];
-            $newJob->create_date          = date( "Y-m-d H:i:s" );
-            $newJob->subject              = $projectStructure[ 'job_subject' ];
-            $newJob->owner                = $projectStructure[ 'owner' ];
-            $newJob->job_first_segment    = $this->min_max_segments_id[ 'job_first_segment' ];
-            $newJob->job_last_segment     = $this->min_max_segments_id[ 'job_last_segment' ];
-            $newJob->tm_keys              = $projectStructure[ 'tm_keys' ];
-            $newJob->payable_rates        = $payableRates;
-            $newJob->total_raw_wc         = $this->files_word_count;
-            $newJob->only_private_tm      = $projectStructure[ 'only_private' ];
+            $newJob                    = new Jobs_JobStruct();
+            $newJob->password          = $password;
+            $newJob->id_project        = $projectStructure[ 'id_project' ];
+            $newJob->id_translator     = is_null( $projectStructure[ 'private_tm_user' ] ) ? "" : $projectStructure[ 'private_tm_user' ];
+            $newJob->source            = $projectStructure[ 'source_language' ];
+            $newJob->target            = $target;
+            $newJob->id_tms            = $projectStructure[ 'tms_engine' ];
+            $newJob->id_mt_engine      = $projectStructure[ 'target_language_mt_engine_id' ][ $target ];
+            $newJob->create_date       = date( "Y-m-d H:i:s" );
+            $newJob->subject           = $projectStructure[ 'job_subject' ];
+            $newJob->owner             = $projectStructure[ 'owner' ];
+            $newJob->job_first_segment = $this->min_max_segments_id[ 'job_first_segment' ];
+            $newJob->job_last_segment  = $this->min_max_segments_id[ 'job_last_segment' ];
+            $newJob->tm_keys           = $projectStructure[ 'tm_keys' ];
+            $newJob->payable_rates     = $payableRates;
+            $newJob->total_raw_wc      = $this->files_word_count;
+            $newJob->only_private_tm   = $projectStructure[ 'only_private' ];
 
             $this->features->run( "beforeInsertJobStruct", $newJob, $projectStructure, [
                             'total_project_segments' => $this->total_segments,
@@ -1523,7 +1529,7 @@ class ProjectManager {
             throw new Exception( 'The requested number of words for the first chunk is too large. I cannot create 2 chunks.', -7 );
         }
 
-        $chunk = Jobs_JobDao::getByIdAndPassword($projectStructure[ 'job_to_split' ], $projectStructure[ 'job_to_split_pass' ]);
+        $chunk                                   = Jobs_JobDao::getByIdAndPassword( $projectStructure[ 'job_to_split' ], $projectStructure[ 'job_to_split_pass' ] );
         $row_totals[ 'standard_analysis_count' ] = $chunk->standard_analysis_wc;
 
         $result = array_merge( $row_totals->getArrayCopy(), [ 'chunks' => $counter ] );
@@ -1585,7 +1591,7 @@ class ProjectManager {
         $num_split                     = count( $projectStructure[ 'split_result' ][ 'chunks' ] );
         $total_raw_wc                  = $jobToSplit[ 'total_raw_wc' ];
         $splitted_total_raw_wc         = round( $total_raw_wc / $num_split );
-        $splitted_standard_analysis_wc = round( $projectStructure[ 'split_result' ]['standard_analysis_count'] / $num_split );
+        $splitted_standard_analysis_wc = round( $projectStructure[ 'split_result' ][ 'standard_analysis_count' ] / $num_split );
 
         $jobDao->updateStdWcAndTotalWc( $jobToSplit->id, $splitted_standard_analysis_wc, $splitted_total_raw_wc );
 
@@ -1914,8 +1920,8 @@ class ProjectManager {
 
                             // segment original data
                             // if its empty pass create a Segments_SegmentOriginalDataStruct with no data
-                            $segmentOriginalDataStructMap = (!empty( $dataRefMap )) ? ['map' => $dataRefMap]: [];
-                            $segmentOriginalDataStruct = new Segments_SegmentOriginalDataStruct($segmentOriginalDataStructMap);
+                            $segmentOriginalDataStructMap = ( !empty( $dataRefMap ) ) ? [ 'map' => $dataRefMap ] : [];
+                            $segmentOriginalDataStruct    = new Segments_SegmentOriginalDataStruct( $segmentOriginalDataStructMap );
                             $this->projectStructure[ 'segments-original-data' ][ $fid ]->append( $segmentOriginalDataStruct );
 
                             //
@@ -1935,9 +1941,9 @@ class ProjectManager {
                             // $segmentB = 'If you find the content to be inappropriate or offensive, we recommend contacting <ph id="source1" dataRef="source1"/>.';
                             //
                             $segmentHash = md5( $seg_source[ 'raw-content' ] );
-                            if(!empty( $dataRefMap )){
-                                $dataRefReplacer = new DataRefReplacer($dataRefMap);
-                                $segmentHash = md5($dataRefReplacer->replace($seg_source[ 'raw-content' ]));
+                            if ( !empty( $dataRefMap ) ) {
+                                $dataRefReplacer = new DataRefReplacer( $dataRefMap );
+                                $segmentHash     = md5( $dataRefReplacer->replace( $seg_source[ 'raw-content' ] ) );
                             }
 
 
@@ -1967,9 +1973,11 @@ class ProjectManager {
 
                         } // end foreach seg-source
 
-                        if ( self::notesAllowedByMimeType( $mimeType ) ) {
+                        try {
                             $this->__addNotesToProjectStructure( $xliff_trans_unit, $fid );
                             $this->__addTUnitContextsToProjectStructure( $xliff_trans_unit, $fid );
+                        } catch ( \Exception $exception ) {
+                            throw new Exception( $exception->getMessage(), -1 );
                         }
 
                     } else {
@@ -2011,9 +2019,11 @@ class ProjectManager {
                             }
                         }
 
-                        if ( self::notesAllowedByMimeType( $mimeType ) ) {
+                        try {
                             $this->__addNotesToProjectStructure( $xliff_trans_unit, $fid );
                             $this->__addTUnitContextsToProjectStructure( $xliff_trans_unit, $fid );
+                        } catch ( \Exception $exception ) {
+                            throw new Exception( $exception->getMessage(), -1 );
                         }
 
                         $segmentHash = md5( $xliff_trans_unit[ 'source' ][ 'raw-content' ] );
@@ -2022,7 +2032,7 @@ class ProjectManager {
                         if ( !empty( $segmentOriginalData ) ) {
 
                             $dataRefReplacer = new \Matecat\XliffParser\XliffUtils\DataRefReplacer( $segmentOriginalData );
-                            $segmentHash = md5($dataRefReplacer->replace($xliff_trans_unit[ 'source' ][ 'raw-content' ]));
+                            $segmentHash     = md5( $dataRefReplacer->replace( $xliff_trans_unit[ 'source' ][ 'raw-content' ] ) );
 
                             $segmentOriginalDataStruct = new Segments_SegmentOriginalDataStruct( [
                                     'data'             => $segmentOriginalData,
@@ -2188,11 +2198,23 @@ class ProjectManager {
              */
             $this->projectStructure[ 'segments' ][ $fid ][ $position ]->id = $id_segment;
 
-            // persist original data map if present
             /** @var Segments_SegmentOriginalDataStruct $segmentOriginalDataStruct */
-            $segmentOriginalDataStruct = $this->projectStructure[ 'segments-original-data' ][ $fid ][ $position ];
-            if(isset($segmentOriginalDataStruct->map)){
-                Segments_SegmentOriginalDataDao::insertRecord( $id_segment, $segmentOriginalDataStruct->map );
+            $segmentOriginalDataStruct = @$this->projectStructure[ 'segments-original-data' ][ $fid ][ $position ];
+
+            if ( isset( $segmentOriginalDataStruct->map ) ) {
+
+                // We add two filters here (sanitizeOriginalDataMap and correctTagErrors)
+                // to allow the correct tag handling by the plugins
+                $map = $this->features->filter('sanitizeOriginalDataMap', $segmentOriginalDataStruct->map);
+
+                // persist original data map if present
+                Segments_SegmentOriginalDataDao::insertRecord( $id_segment, $map );
+
+                $this->projectStructure[ 'segments' ][ $fid ][ $position ]->segment = $this->features->filter(
+                        'correctTagErrors',
+                        $this->projectStructure[ 'segments' ][ $fid ][ $position ]->segment,
+                        $map
+                );
             }
 
             if ( !isset( $this->projectStructure[ 'file_segments_count' ] [ $fid ] ) ) {
@@ -2452,16 +2474,18 @@ class ProjectManager {
 
                 /* WARNING do not change the order of the keys */
                 $sql_values = [
-                        'id_segment'          => $translation_row [ 0 ],
-                        'id_job'              => $jid,
-                        'segment_hash'        => $translation_row [ 3 ],
-                        'status'              => $iceLockArray[ 'status' ],
-                        'translation'         => $check->getTargetSeg(),
-                        'locked'              => 0, // not allowed to change locked status for pre-translations
-                        'match_type'          => $iceLockArray[ 'match_type' ],
-                        'eq_word_count'       => $iceLockArray[ 'eq_word_count' ],
-                        'suggestion_match'    => $iceLockArray[ 'suggestion_match' ],
-                        'standard_word_count' => $iceLockArray[ 'standard_word_count' ],
+                        'id_segment'             => $translation_row [ 0 ],
+                        'id_job'                 => $jid,
+                        'segment_hash'           => $translation_row [ 3 ],
+                        'status'                  => $iceLockArray[ 'status' ],
+                        'translation'            => $check->getTargetSeg(),
+                        'locked'                 => 0, // not allowed to change locked status for pre-translations
+                        'match_type'             => $iceLockArray[ 'match_type' ],
+                        'eq_word_count'          => $iceLockArray[ 'eq_word_count' ],
+                        'serialized_errors_list' => ( $check->thereAreErrors() ) ? $check->getErrorsJSON() : '',
+                        'warning'                => ( $check->thereAreErrors() ) ? 1 : 0,
+                        'suggestion_match'       => $iceLockArray[ 'suggestion_match' ],
+                        'standard_word_count'    => $iceLockArray[ 'standard_word_count' ],
                 ];
 
                 $query_translations_values[] = $sql_values;
@@ -2729,14 +2753,35 @@ class ProjectManager {
      *
      * @param $trans_unit
      * @param $fid
+     *
+     * @throws Exception
      */
     private function __addNotesToProjectStructure( $trans_unit, $fid ) {
 
         $internal_id = self::sanitizedUnitId( $trans_unit[ 'attr' ][ 'id' ], $fid );
         if ( isset( $trans_unit[ 'notes' ] ) ) {
 
+            if ( count( $trans_unit[ 'notes' ] ) > self::SEGMENT_NOTES_LIMIT ) {
+                throw new \Exception( ' a segment can have a maximum of ' . self::SEGMENT_NOTES_LIMIT . ' notes' );
+            }
+
             foreach ( $trans_unit[ 'notes' ] as $note ) {
                 $this->initArrayObject( 'notes', $internal_id );
+
+                $noteKey     = null;
+                $noteContent = null;
+
+                if ( isset( $note[ 'json' ] ) ) {
+                    $noteContent = $note[ 'json' ];
+                    $noteKey     = 'json';
+                } elseif ( isset( $note[ 'raw-content' ] ) ) {
+                    $noteContent = $note[ 'raw-content' ];
+                    $noteKey     = 'entries';
+                }
+
+                if ( strlen( $noteContent ) > self::SEGMENT_NOTES_MAX_SIZE ) {
+                    throw new \Exception( ' you reached the maximum size for a single segment note (' . self::SEGMENT_NOTES_MAX_SIZE . ' bytes)' );
+                }
 
                 if ( !$this->projectStructure[ 'notes' ][ $internal_id ]->offsetExists( 'entries' ) ) {
                     $this->projectStructure[ 'notes' ][ $internal_id ]->offsetSet( 'entries', new ArrayObject() );
@@ -2745,11 +2790,7 @@ class ProjectManager {
                     $this->projectStructure[ 'notes' ][ $internal_id ]->offsetSet( 'segment_ids', [] );
                 }
 
-                if ( isset( $note[ 'json' ] ) ) {
-                    $this->projectStructure[ 'notes' ][ $internal_id ][ 'json' ]->append( $note[ 'json' ] );
-                } elseif ( isset( $note[ 'raw-content' ] ) ) {
-                    $this->projectStructure[ 'notes' ][ $internal_id ][ 'entries' ]->append( $note[ 'raw-content' ] );
-                }
+                $this->projectStructure[ 'notes' ][ $internal_id ][ $noteKey ]->append( $noteContent );
 
             }
 
