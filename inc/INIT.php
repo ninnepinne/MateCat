@@ -110,7 +110,8 @@ class INIT {
     public static $AUTHCOOKIEDURATION           = 5184000;            // 86400 * 60;         // seconds
     public static $MAX_UPLOAD_FILE_SIZE         = 62914560;         // 60 * 1024 * 1024;  // bytes
     public static $MAX_UPLOAD_TMX_FILE_SIZE     = 314572800;    // 300 * 1024 * 1024; // bytes
-    public static $MAX_NUM_FILES                = 100;
+    public static $MAX_NUM_FILES    = 100;
+    public static $MAX_SOURCE_WORDS = 250000;
 
     /**
      * DQF configuration
@@ -295,7 +296,7 @@ class INIT {
     public static $REPLACE_HISTORY_DRIVER;
     public static $REPLACE_HISTORY_TTL;
 
-    public function __construct(){
+    public function __construct() {
 
         self::$OAUTH_CLIENT_ID       = @INIT::$OAUTH_CONFIG[ 'OAUTH_CLIENT_ID' ];
         self::$OAUTH_CLIENT_SECRET   = @INIT::$OAUTH_CONFIG[ 'OAUTH_CLIENT_SECRET' ];
@@ -317,17 +318,17 @@ class INIT {
     public static $SPELL_CHECK_ENABLED        = false;
     public static $SUPPORTED_FILE_TYPES       = [
             'Office'              => [
-                    'pages'  => [ '', '', 'extdoc' ],
-                    'doc'  => [ '', '', 'extdoc' ],
-                    'dot'  => [ '', '', 'extdoc' ],
-                    'docx' => [ '', '', 'extdoc' ],
-                    'docm' => [ '', '', 'extdoc' ],
-                    'dotx' => [ '', '', 'extdoc' ],
-                    'dotm' => [ '', '', 'extdoc' ],
-                    'rtf'  => [ '', '', 'extdoc' ],
-                    'odt'  => [ '', '', 'extdoc' ],
-                    'ott'  => [ '', '', 'extdoc' ],
-                    'pdf'  => [ '', '', 'extpdf' ],
+                    'pages'   => [ '', '', 'extdoc' ],
+                    'doc'     => [ '', '', 'extdoc' ],
+                    'dot'     => [ '', '', 'extdoc' ],
+                    'docx'    => [ '', '', 'extdoc' ],
+                    'docm'    => [ '', '', 'extdoc' ],
+                    'dotx'    => [ '', '', 'extdoc' ],
+                    'dotm'    => [ '', '', 'extdoc' ],
+                    'rtf'     => [ '', '', 'extdoc' ],
+                    'odt'     => [ '', '', 'extdoc' ],
+                    'ott'     => [ '', '', 'extdoc' ],
+                    'pdf'     => [ '', '', 'extpdf' ],
                     'numbers' => [ '', '', 'extxls' ],
                     'txt'  => [ '', '', 'exttxt' ],
                     'xls'  => [ '', '', 'extxls' ],
