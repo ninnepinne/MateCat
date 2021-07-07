@@ -7,19 +7,6 @@
     "content-hash": "4cbf435f5dc9a6430685ca6f6aa0025b",
     "packages": [
         {
-            "name": "aws/aws-sdk-php",
-<<<<<<< HEAD
-            "version": "3.185.6",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "35310302912fdc3b4a0e829b84424c41e3fd9727"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/35310302912fdc3b4a0e829b84424c41e3fd9727",
-                "reference": "35310302912fdc3b4a0e829b84424c41e3fd9727",
-=======
             "version": "3.185.7",
             "source": {
                 "type": "git",
@@ -30,7 +17,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7c0cd260e749374b5df247c4768c8f33f9a604e4",
                 "reference": "7c0cd260e749374b5df247c4768c8f33f9a604e4",
->>>>>>> develop-xliff-parser-1068
                 "shasum": ""
             },
             "require": {
@@ -105,15 +91,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-<<<<<<< HEAD
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.185.6"
-            },
-            "time": "2021-07-02T18:13:18+00:00"
-=======
                 "source": "https://github.com/aws/aws-sdk-php/tree/3.185.7"
             },
             "time": "2021-07-06T18:16:14+00:00"
->>>>>>> develop-xliff-parser-1068
         },
         {
             "name": "defuse/php-encryption",
