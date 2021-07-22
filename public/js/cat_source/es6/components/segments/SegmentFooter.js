@@ -1,9 +1,6 @@
-/**
- * React Component .
-
- */
 import React from 'react'
 import _ from 'lodash'
+import Cookies from 'js-cookie'
 
 import SegmentFooterMultiMatches from './SegmentFooterMultiMatches'
 import SegmentConstants from '../../constants/SegmentConstants'
