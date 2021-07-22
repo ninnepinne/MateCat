@@ -1,5 +1,4 @@
 import _ from 'lodash'
-
 import Cookies from 'js-cookie'
 
 APP.openOptionsPanel = function (tab, elem) {
